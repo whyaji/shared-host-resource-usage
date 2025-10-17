@@ -17,6 +17,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Process Timeouts
+    |--------------------------------------------------------------------------
+    |
+    | Timeout settings for system commands that may take a long time to execute.
+    | These are especially important for large directories.
+    |
+    */
+    'timeouts' => [
+        'du_command' => env('DU_COMMAND_TIMEOUT', 300), // 5 minutes default
+        'find_command' => env('FIND_COMMAND_TIMEOUT', 180), // 3 minutes default
+        'df_command' => env('DF_COMMAND_TIMEOUT', 60), // 1 minute default
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Schedule
     |--------------------------------------------------------------------------
     |

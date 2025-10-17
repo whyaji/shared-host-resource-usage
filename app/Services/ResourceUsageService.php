@@ -53,7 +53,8 @@ class ResourceUsageService
      */
     private function getFileCount(string $path): int
     {
-        $result = Process::run("find {$path} | wc -l");
+        $timeout = config('resource_monitoring.timeouts.find_command', 180);
+        $result = Process::timeout($timeout)->run("find {$path} | wc -l");
 
         if (!$result->successful()) {
             throw new Exception("Failed to count files: {$result->errorOutput()}");
@@ -68,7 +69,8 @@ class ResourceUsageService
     private function getDiskUsage(string $path): int
     {
         // Use -m flag for MB output on macOS/Linux
-        $result = Process::run("du -sm {$path}");
+        $timeout = config('resource_monitoring.timeouts.du_command', 300);
+        $result = Process::timeout($timeout)->run("du -sm {$path}");
 
         if (!$result->successful()) {
             throw new Exception("Failed to get disk usage: {$result->errorOutput()}");
@@ -96,7 +98,8 @@ class ResourceUsageService
             return (int) $availableInode;
         }
 
-        $result = Process::run("df -i {$path}");
+        $timeout = config('resource_monitoring.timeouts.df_command', 60);
+        $result = Process::timeout($timeout)->run("df -i {$path}");
 
         if (!$result->successful()) {
             throw new Exception("Failed to get available inodes: {$result->errorOutput()}");
@@ -131,7 +134,8 @@ class ResourceUsageService
             return (int) $availableSpace;
         }
 
-        $result = Process::run("df -m {$path}");
+        $timeout = config('resource_monitoring.timeouts.df_command', 60);
+        $result = Process::timeout($timeout)->run("df -m {$path}");
 
         if (!$result->successful()) {
             throw new Exception("Failed to get available space: {$result->errorOutput()}");
