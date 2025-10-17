@@ -15,7 +15,6 @@ class CheckResourceUsage extends Command
      * @var string
      */
     protected $signature = 'resource:check
-                            {--path= : The base path to check (overrides config)}
                             {--sync : Run synchronously instead of dispatching a job}
                             {--queue : Force dispatch as a job even when sync is available}';
 
@@ -31,7 +30,6 @@ class CheckResourceUsage extends Command
      */
     public function handle(ResourceUsageService $service): int
     {
-        $basePath = $this->option('path');
         $sync = $this->option('sync');
         $queue = $this->option('queue');
 
@@ -40,7 +38,7 @@ class CheckResourceUsage extends Command
                 // Run synchronously
                 $this->info('Running resource usage check synchronously...');
 
-                $resourceUsage = $service->checkResourceUsage($basePath);
+                $resourceUsage = $service->checkResourceUsage();
 
                 $this->info('Resource usage check completed successfully!');
                 $this->table(
@@ -60,10 +58,10 @@ class CheckResourceUsage extends Command
                 // Dispatch as job
                 $this->info('Dispatching resource usage check job...');
 
-                ResourceUsageJob::dispatch($basePath);
+                ResourceUsageJob::dispatch();
 
                 $this->info('Resource usage check job dispatched successfully!');
-                $this->info('Base Path: ' . ($basePath ?: config('resource_monitoring.base_path')));
+                $this->info('Base Path: ' . config('resource_monitoring.base_path'));
                 $this->info('Check the logs for job execution details.');
 
                 return Command::SUCCESS;
